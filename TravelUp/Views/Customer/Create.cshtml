@@ -1,0 +1,79 @@
+﻿@model Item
+
+<h2>Add New Item (AJAX)</h2>
+
+<form id="addItemForm">
+    <div>
+        @Html.LabelFor(m => m.Name)
+        @Html.TextBoxFor(m => m.Name, new { id = "name" })
+    </div>
+    <div>
+        @Html.LabelFor(m => m.Description)
+        @Html.TextBoxFor(m => m.Description, new { id = "description" })
+    </div>
+    <button type="submit">Create</button>
+</form>
+
+<div id="errorMessages"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#addItemForm').on('submit', function(e) {
+            e.preventDefault(); // Prevent form submission
+
+            var item = {
+                Name: $('#name').val(),
+                Description: $('#description').val()
+            };
+
+            $.ajax({
+                url: '@Url.Action("AddItemAjax", "Items")',
+                type: 'POST',
+                data: item,
+                success: function(response) {
+                    if (response.success) {
+                        // Append the new item to the list
+                        var newItem = '<tr><td>' + response.item.Id + '</td><td>' + response.item.Name + '</td><td>' + response.item.Description + '</td></tr>';
+                        $('table tbody').append(newItem);
+                    } else {
+                        // Display error messages
+                        $('#errorMessages').html(response.errors.join('<br/>'));
+                    }
+                },
+                error: function() {
+                    alert('An error occurred while adding the item.');
+                }
+            });
+        });
+    });
+
+    $('#addItemForm').on('submit', function (e) {
+        e.preventDefault(); // Prevent default form submission
+
+        var name = $('#name').val();
+        var description = $('#description').val();
+        var errorMessages = [];
+
+        if (!name) {
+            errorMessages.push('Name is required.');
+        }
+
+        if (name.length > 100) {
+            errorMessages.push('Name must be less than 100 characters.');
+        }
+
+        if (description.length > 200) {
+            errorMessages.push('Description must be less than 200 characters.');
+        }
+
+        if (errorMessages.length > 0) {
+            $('#errorMessages').html(errorMessages.join('<br/>'));
+            return;
+        }
+
+        // AJAX code here to submit if no validation errors
+    });
+
+</script>

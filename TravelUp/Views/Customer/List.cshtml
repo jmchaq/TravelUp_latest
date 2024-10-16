@@ -1,0 +1,52 @@
+﻿
+@* @{
+    ViewData["Title"] = "List";
+}
+
+<h1>Index</h1> *@
+@model IEnumerable<Item>
+<h2>Items List</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Name</td>
+                <td>@item.Description</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a href="@Url.Action("Create")">Add New Item</a><script>
+    $(document).ready(function() {
+        $('#addItemForm').submit(function(event) {
+            event.preventDefault();
+            var formData = $(this).serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Create", "Items")',
+                data: formData,
+                success: function(response) {
+                    $('#itemList').append('<li>' + response.name + '</li>');
+                    $('#addItemForm')[0].reset();
+                },
+                error: function() {
+                    alert('Error adding item');
+                }
+            });
+        });
+    });
+</script>
+
+
+
+
